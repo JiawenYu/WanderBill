@@ -137,6 +137,19 @@
             margin-bottom: 10px;
             color: #7f8c8d;
             font-size: 14px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-badge {
+            background-color: #e8f4fd;
+            color: #4a90e2;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
         }
 
         .nav-tabs {
@@ -267,6 +280,12 @@
             color: #95a5a6;
         }
 
+        .user-id-display {
+            font-size: 11px;
+            color: #95a5a6;
+            margin-top: 5px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -297,13 +316,14 @@
             <div class="input-group">
                 <label for="username">Enter your username</label>
                 <input type="text" id="username" placeholder="Your name" autofocus>
+                <small style="color: #7f8c8d; display: block; margin-top: 5px;">Use a nickname, avoid real names</small>
             </div>
 
             <button class="btn" onclick="login()">Start Tracking</button>
 
             <div style="margin-top: 30px; font-size: 14px; color: #7f8c8d;">
                 <p>Welcome to WanderBill! This tool helps you and your travel companions track expenses and simplify debts.</p>
-                <p>All data is stored locally in your browser.</p>
+                <p>All data is stored locally in your browser. Each device has a unique identifier to prevent data mixing.</p>
             </div>
         </div>
 
@@ -313,8 +333,9 @@
                 <h1>WanderBill</h1>
                 <p class="tagline">Travel Expense Tracker</p>
                 <div class="user-info">
-                    Logged in as: <span id="currentUser" class="current-user"></span>
-                    <button class="btn btn-small btn-secondary" onclick="logout()" style="margin-left: 10px;">Logout</button>
+                    <span class="user-badge" id="userBadge"></span>
+                    <span>Logged in as: <span id="currentUser" class="current-user"></span></span>
+                    <button class="btn btn-small btn-secondary" onclick="logout()">Logout</button>
                 </div>
             </header>
 
@@ -355,6 +376,7 @@
                             <div class="input-group">
                                 <label for="newMember">Add Member</label>
                                 <input type="text" id="newMember" placeholder="Member username">
+                                <small style="color: #7f8c8d;">Enter the person's nickname</small>
                             </div>
                         </div>
                         <button class="btn btn-success" onclick="addMember()">Add Member</button>
@@ -511,6 +533,15 @@
                     <h2 class="page-title">Data Synchronization</h2>
 
                     <div class="section">
+                        <h3>Your Unique Identifier</h3>
+                        <div class="input-group">
+                            <label>Your Device ID (auto-generated, unique identifier)</label>
+                            <input type="text" id="deviceIdDisplay" readonly value="" style="background-color: #f8f9fa;">
+                            <small style="color: #7f8c8d;">This ID distinguishes users with the same name on different devices and is never displayed publicly</small>
+                        </div>
+                    </div>
+
+                    <div class="section">
                         <h3>Export Data</h3>
                         <p>Export your WanderBill data to share with travel companions or for backup.</p>
                         <div class="input-group">
@@ -521,7 +552,7 @@
                         <button class="btn btn-secondary" onclick="copyExportData()" style="margin-left: 10px;">Copy to Clipboard</button>
 
                         <div style="margin-top: 15px; font-size: 14px; color: #7f8c8d;">
-                            <p><strong>How to share:</strong> Copy the JSON text above and send it to your travel buddies via messaging app (WhatsApp, etc.). They can paste it into the Import section below.</p>
+                            <p><strong>How to share:</strong> Copy the JSON text above and send it to your travel buddies.When they import, the system will automatically match users.</p>
                         </div>
                     </div>
 
@@ -530,16 +561,15 @@
                         <p>Import data shared by others to synchronize your WanderBill.</p>
                         <div class="input-group">
                             <label for="importData">Paste Data JSON Here</label>
-                            <textarea id="importData" placeholder='Paste JSON data here (e.g., {"username":"Alex","groups":[...],"bills":[...]})'></textarea>
+                            <textarea id="importData" placeholder='Paste JSON data here'></textarea>
                         </div>
                         <button class="btn" onclick="importData()">Import Data</button>
                         <button class="btn btn-danger" onclick="clearImport()" style="margin-left: 10px;">Clear</button>
 
                         <div style="margin-top: 15px; font-size: 14px; color: #7f8c8d;">
-                            <p><strong>Note:</strong> Importing will merge groups and bills from others with your existing data. Your login name remains unchanged. Duplicate items (same ID) will be updated.</p>
+                            <p><strong>Note:</strong> Importing will merge groups and bills from others. Your device ID ensures your data stays separate from others with the same name.</p>
                         </div>
                     </div>
-
 
                     <div class="section">
                         <h3>Reset All Data</h3>
@@ -552,8 +582,84 @@
     </div>
 
     <script>
+        // ============ User Identification System ============
+        const UserIdentifier = {
+            // Current user identifier
+            currentId: null,
+            currentRawUsername: '',
+            
+            // Initialize user identifier
+            init() {
+                let userId = localStorage.getItem('wanderbill_device_id');
+                if (!userId) {
+                    userId = 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('wanderbill_device_id', userId);
+                }
+                this.currentId = userId;
+                return userId;
+            },
+            
+            // Get user identifier
+            getId() {
+                if (!this.currentId) {
+                    this.init();
+                }
+                return this.currentId;
+            },
+            
+            // Generate username with identifier
+            formatUsername(rawUsername) {
+                if (!rawUsername) return '';
+                const userId = this.getId();
+                return `${rawUsername}__${userId}`;
+            },
+            
+            // Parse username with identifier, get raw username
+            parseUsername(formattedUsername) {
+                if (!formattedUsername) return { raw: '', userId: '' };
+                const parts = formattedUsername.split('__');
+                if (parts.length >= 2) {
+                    return {
+                        raw: parts[0],
+                        userId: parts.slice(1).join('__')
+                    };
+                }
+                return { raw: formattedUsername, userId: '' };
+            },
+            
+            // Check if two users are the same (compare identifiers)
+            isSameUser(user1, user2) {
+                if (!user1 || !user2) return false;
+                const parsed1 = this.parseUsername(user1);
+                const parsed2 = this.parseUsername(user2);
+                
+                // If both have userId, compare userId
+                if (parsed1.userId && parsed2.userId) {
+                    return parsed1.userId === parsed2.userId;
+                }
+                // Otherwise compare raw usernames (backward compatibility)
+                return parsed1.raw === parsed2.raw;
+            },
+            
+            // Get display username (remove identifier)
+            getDisplayName(formattedUsername) {
+                if (!formattedUsername) return '';
+                const parsed = this.parseUsername(formattedUsername);
+                return parsed.raw || formattedUsername;
+            },
+            
+            // Get storage key
+            getStorageKey() {
+                return `wanderbill_data_${this.getId()}`;
+            }
+        };
+
+        // Initialize
+        UserIdentifier.init();
+
         // Data structure
         let currentUser = '';
+        let currentUserRaw = '';
         let userData = {
             username: '',
             groups: [],
@@ -569,24 +675,33 @@
             document.getElementById('billDate').value = today.toISOString().split('T')[0];
             document.getElementById('billTime').value = today.toTimeString().slice(0, 5);
 
+            // Display device ID
+            document.getElementById('deviceIdDisplay').value = UserIdentifier.getId();
+
             // Load existing data
             loadUserData();
-
         });
 
         // Load user data from localStorage
         function loadUserData() {
-            const savedUser = localStorage.getItem('wanderbill_user');
+            const storageKey = UserIdentifier.getStorageKey();
+            const savedUser = localStorage.getItem(storageKey);
+            
             if (savedUser) {
                 userData = JSON.parse(savedUser);
-                currentUser = userData.username;
-                showApp();
+                if (userData.username) {
+                    const parsed = UserIdentifier.parseUsername(userData.username);
+                    currentUser = userData.username;
+                    currentUserRaw = parsed.raw;
+                    showApp();
+                }
             }
         }
 
         // Save user data to localStorage
         function saveUserData() {
-            localStorage.setItem('wanderbill_user', JSON.stringify(userData));
+            const storageKey = UserIdentifier.getStorageKey();
+            localStorage.setItem(storageKey, JSON.stringify(userData));
         }
 
         // Login function
@@ -597,24 +712,23 @@
                 return;
             }
 
-            currentUser = username;
+            // Save raw username
+            currentUserRaw = username;
+            // Generate username with identifier
+            currentUser = UserIdentifier.formatUsername(username);
 
-            // Check if user exists
-            const savedUser = localStorage.getItem('wanderbill_user');
+            const storageKey = UserIdentifier.getStorageKey();
+            const savedUser = localStorage.getItem(storageKey);
+
             if (savedUser) {
                 userData = JSON.parse(savedUser);
-                if (userData.username !== username) {
-                    // New user with different name
-                    userData = {
-                        username: username,
-                        groups: [],
-                        bills: []
-                    };
+                // Ensure username consistency
+                if (userData.username !== currentUser) {
+                    userData.username = currentUser;
                 }
             } else {
-                // New user
                 userData = {
-                    username: username,
+                    username: currentUser,
                     groups: [],
                     bills: []
                 };
@@ -628,8 +742,10 @@
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 currentUser = '';
+                currentUserRaw = '';
                 document.getElementById('loginPage').style.display = 'block';
                 document.getElementById('app').style.display = 'none';
+                document.getElementById('username').value = '';
             }
         }
 
@@ -637,7 +753,10 @@
         function showApp() {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            document.getElementById('currentUser').textContent = currentUser;
+            
+            // Remove identifier when displaying
+            document.getElementById('currentUser').textContent = currentUserRaw;
+            document.getElementById('userBadge').textContent = `ID: ${UserIdentifier.getId().substr(0, 8)}...`;
 
             refreshGroupsList();
             refreshBillForm();
@@ -697,7 +816,7 @@
                         <div>
                             <strong>${group.name}</strong>
                             <div style="font-size: 12px; color: #95a5a6;">
-                                ${group.members.length} member(s) • Created by ${group.createdBy}
+                                ${group.members.length} member(s) • Created by ${UserIdentifier.getDisplayName(group.createdBy)}
                             </div>
                         </div>
                         <div>
@@ -710,6 +829,13 @@
             groupsList.innerHTML = html;
 
             // Update bill form group dropdown
+            updateBillGroupDropdown();
+            
+            // Update debt form group dropdown
+            updateDebtGroupDropdown();
+        }
+
+        function updateBillGroupDropdown() {
             const billGroupSelect = document.getElementById('billGroup');
             billGroupSelect.innerHTML = '<option value="">Select a group</option>';
             userData.groups.forEach(group => {
@@ -718,8 +844,9 @@
                 option.textContent = group.name;
                 billGroupSelect.appendChild(option);
             });
+        }
 
-            // Update debt form group dropdown
+        function updateDebtGroupDropdown() {
             const debtGroupSelect = document.getElementById('debtGroup');
             debtGroupSelect.innerHTML = '<option value="">Select a group</option>';
             userData.groups.forEach(group => {
@@ -744,10 +871,12 @@
             } else {
                 let html = '';
                 group.members.forEach(member => {
+                    const displayName = UserIdentifier.getDisplayName(member);
+                    const isCurrentUser = UserIdentifier.isSameUser(member, currentUser);
                     html += `
                         <div class="member-item">
-                            <div>${member} ${member === currentUser ? '(You)' : ''}</div>
-                            ${member !== currentUser ? `<button class="btn btn-small btn-danger" onclick="removeMember('${member}')">Remove</button>` : ''}
+                            <div>${displayName} ${isCurrentUser ? '(You)' : ''}</div>
+                            ${!isCurrentUser ? `<button class="btn btn-small btn-danger" onclick="removeMember('${member}')">Remove</button>` : ''}
                         </div>
                     `;
                 });
@@ -769,8 +898,8 @@
         function addMember() {
             if (!selectedGroupId) return;
 
-            const newMember = document.getElementById('newMember').value.trim();
-            if (!newMember) {
+            const newMemberRaw = document.getElementById('newMember').value.trim();
+            if (!newMemberRaw) {
                 alert('Please enter a username');
                 return;
             }
@@ -778,31 +907,43 @@
             const group = userData.groups.find(g => g.id === selectedGroupId);
             if (!group) return;
 
-            if (group.members.includes(newMember)) {
+            // Generate member name with identifier
+            const newMemberFormatted = UserIdentifier.formatUsername(newMemberRaw);
+            
+            // Check if member already exists (compare using isSameUser)
+            const exists = group.members.some(member => 
+                UserIdentifier.isSameUser(member, newMemberFormatted)
+            );
+            
+            if (exists) {
                 alert('This user is already in the group');
                 return;
             }
 
-            group.members.push(newMember);
+            // Add member
+            group.members.push(newMemberFormatted);
+            
             saveUserData();
             document.getElementById('newMember').value = '';
             viewGroup(selectedGroupId);
             refreshBillForm();
         }
 
-        function removeMember(member) {
+        function removeMember(memberToRemove) {
             if (!selectedGroupId) return;
 
             const group = userData.groups.find(g => g.id === selectedGroupId);
             if (!group) return;
 
-            if (member === currentUser) {
+            // Check if current user
+            if (UserIdentifier.isSameUser(memberToRemove, currentUser)) {
                 alert('You cannot remove yourself from the group');
                 return;
             }
 
-            if (confirm(`Remove ${member} from the group?`)) {
-                group.members = group.members.filter(m => m !== member);
+            if (confirm(`Remove ${UserIdentifier.getDisplayName(memberToRemove)} from the group?`)) {
+                // Filter out member to remove
+                group.members = group.members.filter(m => !UserIdentifier.isSameUser(m, memberToRemove));
                 saveUserData();
                 viewGroup(selectedGroupId);
                 refreshBillForm();
@@ -841,7 +982,9 @@
                     group.members.forEach(member => {
                         const option = document.createElement('option');
                         option.value = member;
-                        option.textContent = member + (member === currentUser ? ' (You)' : '');
+                        const displayName = UserIdentifier.getDisplayName(member);
+                        const isCurrentUser = UserIdentifier.isSameUser(member, currentUser);
+                        option.textContent = displayName + (isCurrentUser ? ' (You)' : '');
                         billPayerSelect.appendChild(option);
                     });
                 }
@@ -881,9 +1024,11 @@
                 // Create input for each member
                 let html = '';
                 group.members.forEach(member => {
+                    const displayName = UserIdentifier.getDisplayName(member);
+                    const isCurrentUser = UserIdentifier.isSameUser(member, currentUser);
                     html += `
                         <div class="split-inputs">
-                            <div>${member} ${member === currentUser ? '(You)' : ''}</div>
+                            <div>${displayName} ${isCurrentUser ? '(You)' : ''}</div>
                             <input type="number" id="split_${member}" placeholder="Amount" step="0.01" min="0" style="width: 150px;">
                         </div>
                     `;
@@ -943,7 +1088,7 @@
                 });
 
                 if (Math.abs(total - amount) > 0.01) {
-                    alert(`Custom splits total (${total}) doesn't match bill amount (${amount})`);
+                    alert(`Custom splits total (${total.toFixed(2)}) doesn't match bill amount (${amount.toFixed(2)})`);
                     return;
                 }
             }
@@ -1000,7 +1145,7 @@
                         <div style="flex: 1;">
                             <strong>${bill.description}</strong>
                             <div style="font-size: 14px; color: #555;">
-                                ${bill.currency} ${bill.amount.toFixed(2)} • Paid by ${bill.payer} ${bill.payer === currentUser ? '(You)' : ''}
+                                ${bill.currency} ${bill.amount.toFixed(2)} • Paid by ${UserIdentifier.getDisplayName(bill.payer)} ${UserIdentifier.isSameUser(bill.payer, currentUser) ? '(You)' : ''}
                             </div>
                             <div style="font-size: 12px; color: #95a5a6;">
                                 ${group.name} • ${dateStr} at ${timeStr}
@@ -1113,10 +1258,15 @@
             html += '<p>To settle all debts with minimum transactions:</p>';
 
             transactions.forEach(tx => {
+                const fromDisplay = UserIdentifier.getDisplayName(tx.from);
+                const toDisplay = UserIdentifier.getDisplayName(tx.to);
+                const isFromCurrent = UserIdentifier.isSameUser(tx.from, currentUser);
+                const isToCurrent = UserIdentifier.isSameUser(tx.to, currentUser);
+                
                 html += `
                     <div class="debt-item">
-                        <strong>${tx.from}</strong> ${tx.from === currentUser ? '(You)' : ''}
-                        pays <strong>${tx.to}</strong> ${tx.to === currentUser ? '(You)' : ''}
+                        <strong>${fromDisplay}</strong> ${isFromCurrent ? '(You)' : ''}
+                        pays <strong>${toDisplay}</strong> ${isToCurrent ? '(You)' : ''}
                         <span class="positive">${tx.amount.toFixed(2)}</span>
                     </div>
                 `;
@@ -1132,9 +1282,11 @@
                 if (Math.abs(balance) > 0.01) {
                     const className = balance > 0 ? 'positive' : 'negative';
                     const sign = balance > 0 ? '+' : '';
+                    const displayName = UserIdentifier.getDisplayName(person);
+                    const isCurrent = UserIdentifier.isSameUser(person, currentUser);
                     html += `
                         <div style="margin: 5px 0;">
-                            ${person} ${person === currentUser ? '(You)' : ''}:
+                            ${displayName} ${isCurrent ? '(You)' : ''}:
                             <span class="${className}">${sign}${balance.toFixed(2)}</span>
                         </div>
                     `;
@@ -1146,21 +1298,42 @@
             debtResults.innerHTML = html;
         }
 
-        function refreshDebtForm() {
-            // Already handled in refreshGroupsList
-        }
-
         // Data synchronization functions
         function exportData() {
             const exportTextarea = document.getElementById('exportData');
-            const dataToExport = {
-                username: userData.username,
-                groups: userData.groups,
-                bills: userData.bills,
-                exportedAt: new Date().toISOString(),
-                version: '1.0'
+            
+            // Create export version without internal IDs
+            const exportData = {
+                version: '2.0',
+                exportDate: new Date().toISOString(),
+                groups: userData.groups.map(group => ({
+                    id: group.id,
+                    name: group.name,
+                    members: group.members.map(m => UserIdentifier.getDisplayName(m)),
+                    createdBy: UserIdentifier.getDisplayName(group.createdBy),
+                    createdAt: group.createdAt
+                })),
+                bills: userData.bills.map(bill => ({
+                    id: bill.id,
+                    groupId: bill.groupId,
+                    groupName: bill.groupName,
+                    description: bill.description,
+                    currency: bill.currency,
+                    amount: bill.amount,
+                    payer: UserIdentifier.getDisplayName(bill.payer),
+                    splits: Object.fromEntries(
+                        Object.entries(bill.splits).map(([member, amount]) => [
+                            UserIdentifier.getDisplayName(member),
+                            amount
+                        ])
+                    ),
+                    date: bill.date,
+                    time: bill.time,
+                    createdAt: bill.createdAt
+                }))
             };
-            exportTextarea.value = JSON.stringify(dataToExport, null, 2);
+            
+            exportTextarea.value = JSON.stringify(exportData, null, 2);
             alert('Data exported successfully! Copy the JSON text and share it with your travel buddies.');
         }
 
@@ -1188,53 +1361,92 @@
                 const importedData = JSON.parse(importText);
 
                 // Basic validation
-                if (!importedData.username || !Array.isArray(importedData.groups) || !Array.isArray(importedData.bills)) {
-                    throw new Error('Invalid data format. Expected JSON with username, groups, and bills arrays.');
+                if (!importedData.groups || !importedData.bills) {
+                    throw new Error('Invalid data format. Expected JSON with groups and bills arrays.');
                 }
 
-                if (confirm(`Import groups and bills from ${importedData.username}? Your login name (${currentUser}) will remain unchanged.`)) {
-                    // Store current username before merge
-                    const currentUsername = currentUser;
+                if (confirm('Import groups and bills from shared data?')) {
+                    // Create a map of display names to actual members in current groups
+                    const nameToMemberMap = new Map();
+                    
+                    // Collect all existing members from current groups
+                    userData.groups.forEach(group => {
+                        group.members.forEach(member => {
+                            const displayName = UserIdentifier.getDisplayName(member);
+                            nameToMemberMap.set(displayName, member);
+                        });
+                    });
 
-                    // Merge groups (avoid duplicates by ID)
+                    // Import groups
                     importedData.groups.forEach(importedGroup => {
+                        // Map member display names to actual member identifiers
+                        const mappedMembers = importedGroup.members.map(displayName => {
+                            // Check if we already have this member
+                            if (nameToMemberMap.has(displayName)) {
+                                return nameToMemberMap.get(displayName);
+                            }
+                            // If not, create a new member identifier with current device ID
+                            // Note: This assumes the member is using the same device/instance
+                            return UserIdentifier.formatUsername(displayName);
+                        });
+
                         const existingGroupIndex = userData.groups.findIndex(g => g.id === importedGroup.id);
                         if (existingGroupIndex === -1) {
                             // Add new group
-                            userData.groups.push(importedGroup);
+                            userData.groups.push({
+                                id: importedGroup.id,
+                                name: importedGroup.name,
+                                members: mappedMembers,
+                                createdBy: UserIdentifier.formatUsername(importedGroup.createdBy),
+                                createdAt: importedGroup.createdAt
+                            });
                         } else {
                             // Update existing group - merge members
                             const existingGroup = userData.groups[existingGroupIndex];
-                            // Add any missing members from imported group
-                            importedGroup.members.forEach(member => {
-                                if (!existingGroup.members.includes(member)) {
+                            mappedMembers.forEach(member => {
+                                if (!existingGroup.members.some(m => UserIdentifier.isSameUser(m, member))) {
                                     existingGroup.members.push(member);
                                 }
                             });
-                            // Keep other properties from imported group (name, etc.)
-                            userData.groups[existingGroupIndex] = {
-                                ...existingGroup,
-                                name: importedGroup.name,
-                                createdBy: importedGroup.createdBy,
-                                createdAt: importedGroup.createdAt
-                            };
                         }
                     });
 
-                    // Merge bills (avoid duplicates by ID)
+                    // Import bills
                     importedData.bills.forEach(importedBill => {
+                        // Map payer
+                        const mappedPayer = nameToMemberMap.has(importedBill.payer) 
+                            ? nameToMemberMap.get(importedBill.payer)
+                            : UserIdentifier.formatUsername(importedBill.payer);
+
+                        // Map splits
+                        const mappedSplits = {};
+                        Object.entries(importedBill.splits).forEach(([member, amount]) => {
+                            mappedSplits[
+                                nameToMemberMap.has(member) 
+                                    ? nameToMemberMap.get(member)
+                                    : UserIdentifier.formatUsername(member)
+                            ] = amount;
+                        });
+
                         const existingBillIndex = userData.bills.findIndex(b => b.id === importedBill.id);
                         if (existingBillIndex === -1) {
                             // Add new bill
-                            userData.bills.push(importedBill);
-                        } else {
-                            // Update existing bill
-                            userData.bills[existingBillIndex] = importedBill;
+                            userData.bills.push({
+                                id: importedBill.id,
+                                groupId: importedBill.groupId,
+                                groupName: importedBill.groupName,
+                                description: importedBill.description,
+                                currency: importedBill.currency,
+                                amount: importedBill.amount,
+                                payer: mappedPayer,
+                                splits: mappedSplits,
+                                date: importedBill.date,
+                                time: importedBill.time,
+                                createdAt: importedBill.createdAt
+                            });
                         }
                     });
 
-                    // Keep current username (don't change login identity)
-                    userData.username = currentUsername;
                     saveUserData();
 
                     // Refresh everything
@@ -1246,21 +1458,7 @@
                     // Clear import textarea
                     importTextarea.value = '';
 
-                    // Check if current user appears in any imported group members
-                    let userFoundInGroups = false;
-                    importedData.groups.forEach(group => {
-                        if (group.members.includes(currentUser)) {
-                            userFoundInGroups = true;
-                        }
-                    });
-
-                    let message = `Data imported successfully! Added ${importedData.groups.length} group(s) and ${importedData.bills.length} bill(s) to your account. You are still logged in as ${currentUser}.`;
-
-                    if (importedData.groups.length > 0 && !userFoundInGroups) {
-                        message += `\n\n⚠️ Note: Your username "${currentUser}" was not found in any imported groups. Make sure you're using the same username as in the shared data.`;
-                    }
-
-                    alert(message);
+                    alert(`Data imported successfully! Added groups and bills to your account.`);
                 }
             } catch (error) {
                 alert(`Error importing data: ${error.message}\n\nMake sure you copied the entire JSON text correctly.`);
@@ -1274,8 +1472,11 @@
         function resetAllData() {
             if (confirm('WARNING: This will delete ALL your data including groups, bills, and settings. This cannot be undone. Are you sure?')) {
                 if (confirm('Are you REALLY sure? This will completely reset WanderBill.')) {
-                    localStorage.removeItem('wanderbill_user');
+                    const storageKey = UserIdentifier.getStorageKey();
+                    localStorage.removeItem(storageKey);
+                    
                     currentUser = '';
+                    currentUserRaw = '';
                     userData = {
                         username: '',
                         groups: [],
@@ -1293,11 +1494,10 @@
             }
         }
 
-
         // Event listeners for dynamic updates
         document.getElementById('billGroup').addEventListener('change', function() {
             refreshBillForm();
-            toggleSplitOptions(); // In case split type is custom
+            toggleSplitOptions();
         });
 
         document.getElementById('billCurrency').addEventListener('change', function() {
