@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WanderBill - Travel Expense Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #4a90e2;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .tagline {
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            display: none;
+        }
+
+        .page {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .page-title {
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #357abd;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        .user-info {
+            text-align: right;
+            margin-bottom: 10px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            color: #7f8c8d;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #4a90e2;
+            border-bottom: 2px solid #4a90e2;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .members-list, .bills-list, .groups-list {
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .member-item, .bill-item, .group-item {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #95a5a6;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        .split-options {
+            margin-top: 10px;
+        }
+
+        .split-inputs {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .debt-result {
+            background: #e8f4fd;
+            border: 1px solid #4a90e2;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .debt-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .debt-item:last-child {
+            border-bottom: none;
+        }
+
+        .positive {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .negative {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .currency-amount {
+            display: flex;
+            gap: 10px;
+        }
+
+        .currency-amount select {
+            width: 100px;
+        }
+
+        .currency-amount input {
+            flex: 1;
+        }
+
+        .current-user {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #95a5a6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                text-align: left;
+                border-bottom: 1px solid #eee;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Page -->
+        <div id="loginPage" class="login-container page">
+            <h1>WanderBill</h1>
+            <p class="tagline">Track travel expenses with friends</p>
+
+            <div class="input-group">
+                <label for="username">Enter your username</label>
+                <input type="text" id="username" placeholder="Your name" autofocus>
+            </div>
+
+            <button class="btn" onclick="login()">Start Tracking</button>
+
+            <div style="margin-top: 30px; font-size: 14px; color: #7f8c8d;">
+                <p>Welcome to WanderBill! This tool helps you and your travel companions track expenses and simplify debts.</p>
+                <p>All data is stored locally in your browser.</p>
+            </div>
+        </div>
+
+        <!-- Main App (hidden until login) -->
+        <div id="app" class="main-content">
+            <header>
+                <h1>WanderBill</h1>
+                <p class="tagline">Travel Expense Tracker</p>
+                <div class="user-info">
+                    Logged in as: <span id="currentUser" class="current-user"></span>
+                    <button class="btn btn-small btn-secondary" onclick="logout()" style="margin-left: 10px;">Logout</button>
+                </div>
+            </header>
+
+            <div class="nav-tabs">
+                <button class="tab active" onclick="showTab('groups')">Travel Groups</button>
+                <button class="tab" onclick="showTab('bills')">Bills</button>
+                <button class="tab" onclick="showTab('debts')">Debts</button>
+                <button class="tab" onclick="showTab('sync')">Data Sync</button>
+            </div>
+
+            <!-- Travel Groups Tab -->
+            <div id="groupsTab" class="tab-content active">
+                <div class="page">
+                    <h2 class="page-title">Travel Groups</h2>
+
+                    <div class="section">
+                        <h3>Create New Group</h3>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="groupName">Group Name</label>
+                                <input type="text" id="groupName" placeholder="e.g., Thailand Trip 2023">
+                            </div>
+                        </div>
+                        <button class="btn" onclick="createGroup()">Create Group</button>
+                    </div>
+
+                    <div class="section">
+                        <h3>Your Groups</h3>
+                        <div id="groupsList" class="groups-list">
+                            <div class="empty-state">No groups yet. Create your first travel group!</div>
+                        </div>
+                    </div>
+
+                    <div class="section" id="groupDetailsSection" style="display: none;">
+                        <h3>Group Details: <span id="selectedGroupName"></span></h3>
+
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="newMember">Add Member</label>
+                                <input type="text" id="newMember" placeholder="Member username">
+                            </div>
+                        </div>
+                        <button class="btn btn-success" onclick="addMember()">Add Member</button>
+
+                        <h4 style="margin-top: 20px;">Group Members</h4>
+                        <div id="membersList" class="members-list">
+                            <div class="empty-state">No members yet. Add members to this group.</div>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <button class="btn btn-secondary" onclick="backToGroups()">Back to Groups</button>
+                            <button class="btn btn-danger" onclick="deleteCurrentGroup()" style="float: right;">Delete Group</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bills Tab -->
+            <div id="billsTab" class="tab-content">
+                <div class="page">
+                    <h2 class="page-title">Bills</h2>
+
+                    <div class="section">
+                        <h3>Add New Bill</h3>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="billGroup">Select Group</label>
+                                <select id="billGroup">
+                                    <option value="">Select a group</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="billDescription">Description</label>
+                                <input type="text" id="billDescription" placeholder="e.g., Dinner at restaurant">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="billCurrency">Currency</label>
+                                <select id="billCurrency">
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                    <option value="JPY">JPY (¥)</option>
+                                    <option value="CNY">CNY (¥)</option>
+                                    <option value="KRW">KRW (₩)</option>
+                                    <option value="THB">THB (฿)</option>
+                                    <option value="INR">INR (₹)</option>
+                                    <option value="AUD">AUD ($)</option>
+                                    <option value="CAD">CAD ($)</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="billAmount">Amount</label>
+                                <div class="currency-amount">
+                                    <select id="billCurrencySymbol" style="width: 60px;">
+                                        <option value="$">$</option>
+                                        <option value="€">€</option>
+                                        <option value="£">£</option>
+                                        <option value="¥">¥</option>
+                                        <option value="฿">฿</option>
+                                        <option value="₹">₹</option>
+                                        <option value="₩">₩</option>
+                                    </select>
+                                    <input type="number" id="billAmount" placeholder="0.00" step="0.01" min="0">
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="billPayer">Paid By</label>
+                                <select id="billPayer">
+                                    <option value="">Select payer</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="billSplitType">Split Type</label>
+                                <select id="billSplitType" onchange="toggleSplitOptions()">
+                                    <option value="equal">Equal Split</option>
+                                    <option value="custom">Custom Amounts</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="billDate">Date</label>
+                                <input type="date" id="billDate">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="billTime">Time</label>
+                                <input type="time" id="billTime">
+                            </div>
+                        </div>
+
+                        <div id="customSplitSection" class="split-options" style="display: none;">
+                            <h4>Custom Split Amounts</h4>
+                            <div id="customSplitInputs">
+                                <!-- Dynamically generated based on group members -->
+                            </div>
+                        </div>
+
+                        <button class="btn btn-success" onclick="addBill()">Add Bill</button>
+                    </div>
+
+                    <div class="section">
+                        <h3>Recent Bills</h3>
+                        <div id="billsList" class="bills-list">
+                            <div class="empty-state">No bills yet. Add your first bill!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Debts Tab -->
+            <div id="debtsTab" class="tab-content">
+                <div class="page">
+                    <h2 class="page-title">Debt Simplification</h2>
+
+                    <div class="section">
+                        <h3>Select Group to Simplify Debts</h3>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="debtGroup">Group</label>
+                                <select id="debtGroup" onchange="calculateDebts()">
+                                    <option value="">Select a group</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div id="debtResults">
+                            <div class="empty-state">Select a group to see simplified debts</div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>How It Works</h3>
+                        <p>WanderBill simplifies debt networks so you can settle up with fewer transactions.</p>
+                        <p><strong>Example:</strong> If A owes B $100, and B owes C $200, WanderBill will suggest:
+                        <ul>
+                            <li>A pays C $100</li>
+                            <li>B pays C $100</li>
+                        </ul>
+                        This reduces 3 transactions to just 2.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Sync Tab -->
+            <div id="syncTab" class="tab-content">
+                <div class="page">
+                    <h2 class="page-title">Data Synchronization</h2>
+
+                    <div class="section">
+                        <h3>Export Data</h3>
+                        <p>Export your WanderBill data to share with travel companions or for backup.</p>
+                        <div class="input-group">
+                            <label for="exportData">Your Data (JSON)</label>
+                            <textarea id="exportData" readonly placeholder="Click 'Export Data' to generate"></textarea>
+                        </div>
+                        <button class="btn btn-success" onclick="exportData()">Export Data</button>
+                        <button class="btn btn-secondary" onclick="copyExportData()" style="margin-left: 10px;">Copy to Clipboard</button>
+
+                        <div style="margin-top: 15px; font-size: 14px; color: #7f8c8d;">
+                            <p><strong>How to share:</strong> Copy the JSON text above and send it to your travel buddies via messaging app (WhatsApp, etc.). They can paste it into the Import section below.</p>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>Import Data</h3>
+                        <p>Import data shared by others to synchronize your WanderBill.</p>
+                        <div class="input-group">
+                            <label for="importData">Paste Data JSON Here</label>
+                            <textarea id="importData" placeholder='Paste JSON data here (e.g., {"username":"Alex","groups":[...],"bills":[...]})'></textarea>
+                        </div>
+                        <button class="btn" onclick="importData()">Import Data</button>
+                        <button class="btn btn-danger" onclick="clearImport()" style="margin-left: 10px;">Clear</button>
+
+                        <div style="margin-top: 15px; font-size: 14px; color: #7f8c8d;">
+                            <p><strong>Note:</strong> Importing will merge groups and bills from others with your existing data. Your login name remains unchanged. Duplicate items (same ID) will be updated.</p>
+                        </div>
+                    </div>
+
+
+                    <div class="section">
+                        <h3>Reset All Data</h3>
+                        <p>Warning: This will delete ALL your data including groups and bills.</p>
+                        <button class="btn btn-danger" onclick="resetAllData()">Reset All Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data structure
+        let currentUser = '';
+        let userData = {
+            username: '',
+            groups: [],
+            bills: []
+        };
+
+        let selectedGroupId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default date to today
+            const today = new Date();
+            document.getElementById('billDate').value = today.toISOString().split('T')[0];
+            document.getElementById('billTime').value = today.toTimeString().slice(0, 5);
+
+            // Load existing data
+            loadUserData();
+
+        });
+
+        // Load user data from localStorage
+        function loadUserData() {
+            const savedUser = localStorage.getItem('wanderbill_user');
+            if (savedUser) {
+                userData = JSON.parse(savedUser);
+                currentUser = userData.username;
+                showApp();
+            }
+        }
+
+        // Save user data to localStorage
+        function saveUserData() {
+            localStorage.setItem('wanderbill_user', JSON.stringify(userData));
+        }
+
+        // Login function
+        function login() {
+            const username = document.getElementById('username').value.trim();
+            if (!username) {
+                alert('Please enter a username');
+                return;
+            }
+
+            currentUser = username;
+
+            // Check if user exists
+            const savedUser = localStorage.getItem('wanderbill_user');
+            if (savedUser) {
+                userData = JSON.parse(savedUser);
+                if (userData.username !== username) {
+                    // New user with different name
+                    userData = {
+                        username: username,
+                        groups: [],
+                        bills: []
+                    };
+                }
+            } else {
+                // New user
+                userData = {
+                    username: username,
+                    groups: [],
+                    bills: []
+                };
+            }
+
+            saveUserData();
+            showApp();
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                currentUser = '';
+                document.getElementById('loginPage').style.display = 'block';
+                document.getElementById('app').style.display = 'none';
+            }
+        }
+
+        // Show main app
+        function showApp() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('currentUser').textContent = currentUser;
+
+            refreshGroupsList();
+            refreshBillForm();
+            refreshBillsList();
+            refreshDebtForm();
+        }
+
+        // Tab navigation
+        function showTab(tabName) {
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        // Group management
+        function createGroup() {
+            const groupName = document.getElementById('groupName').value.trim();
+            if (!groupName) {
+                alert('Please enter a group name');
+                return;
+            }
+
+            const newGroup = {
+                id: Date.now().toString(),
+                name: groupName,
+                members: [currentUser],
+                createdBy: currentUser,
+                createdAt: new Date().toISOString()
+            };
+
+            userData.groups.push(newGroup);
+            saveUserData();
+            document.getElementById('groupName').value = '';
+            refreshGroupsList();
+            refreshBillForm();
+            refreshDebtForm();
+        }
+
+        function refreshGroupsList() {
+            const groupsList = document.getElementById('groupsList');
+            if (userData.groups.length === 0) {
+                groupsList.innerHTML = '<div class="empty-state">No groups yet. Create your first travel group!</div>';
+                return;
+            }
+
+            let html = '';
+            userData.groups.forEach(group => {
+                html += `
+                    <div class="group-item">
+                        <div>
+                            <strong>${group.name}</strong>
+                            <div style="font-size: 12px; color: #95a5a6;">
+                                ${group.members.length} member(s) • Created by ${group.createdBy}
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-small" onclick="viewGroup('${group.id}')">View</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            groupsList.innerHTML = html;
+
+            // Update bill form group dropdown
+            const billGroupSelect = document.getElementById('billGroup');
+            billGroupSelect.innerHTML = '<option value="">Select a group</option>';
+            userData.groups.forEach(group => {
+                const option = document.createElement('option');
+                option.value = group.id;
+                option.textContent = group.name;
+                billGroupSelect.appendChild(option);
+            });
+
+            // Update debt form group dropdown
+            const debtGroupSelect = document.getElementById('debtGroup');
+            debtGroupSelect.innerHTML = '<option value="">Select a group</option>';
+            userData.groups.forEach(group => {
+                const option = document.createElement('option');
+                option.value = group.id;
+                option.textContent = group.name;
+                debtGroupSelect.appendChild(option);
+            });
+        }
+
+        function viewGroup(groupId) {
+            const group = userData.groups.find(g => g.id === groupId);
+            if (!group) return;
+
+            selectedGroupId = groupId;
+            document.getElementById('selectedGroupName').textContent = group.name;
+
+            // Show group members
+            const membersList = document.getElementById('membersList');
+            if (group.members.length === 0) {
+                membersList.innerHTML = '<div class="empty-state">No members yet. Add members to this group.</div>';
+            } else {
+                let html = '';
+                group.members.forEach(member => {
+                    html += `
+                        <div class="member-item">
+                            <div>${member} ${member === currentUser ? '(You)' : ''}</div>
+                            ${member !== currentUser ? `<button class="btn btn-small btn-danger" onclick="removeMember('${member}')">Remove</button>` : ''}
+                        </div>
+                    `;
+                });
+                membersList.innerHTML = html;
+            }
+
+            // Show group details section
+            document.getElementById('groupsList').parentElement.style.display = 'none';
+            document.getElementById('groupDetailsSection').style.display = 'block';
+        }
+
+        function backToGroups() {
+            selectedGroupId = null;
+            document.getElementById('groupsList').parentElement.style.display = 'block';
+            document.getElementById('groupDetailsSection').style.display = 'none';
+            refreshGroupsList();
+        }
+
+        function addMember() {
+            if (!selectedGroupId) return;
+
+            const newMember = document.getElementById('newMember').value.trim();
+            if (!newMember) {
+                alert('Please enter a username');
+                return;
+            }
+
+            const group = userData.groups.find(g => g.id === selectedGroupId);
+            if (!group) return;
+
+            if (group.members.includes(newMember)) {
+                alert('This user is already in the group');
+                return;
+            }
+
+            group.members.push(newMember);
+            saveUserData();
+            document.getElementById('newMember').value = '';
+            viewGroup(selectedGroupId);
+            refreshBillForm();
+        }
+
+        function removeMember(member) {
+            if (!selectedGroupId) return;
+
+            const group = userData.groups.find(g => g.id === selectedGroupId);
+            if (!group) return;
+
+            if (member === currentUser) {
+                alert('You cannot remove yourself from the group');
+                return;
+            }
+
+            if (confirm(`Remove ${member} from the group?`)) {
+                group.members = group.members.filter(m => m !== member);
+                saveUserData();
+                viewGroup(selectedGroupId);
+                refreshBillForm();
+            }
+        }
+
+        function deleteCurrentGroup() {
+            if (!selectedGroupId) return;
+
+            if (confirm('Are you sure you want to delete this group? All bills in this group will also be deleted.')) {
+                // Delete group
+                userData.groups = userData.groups.filter(g => g.id !== selectedGroupId);
+
+                // Delete bills in this group
+                userData.bills = userData.bills.filter(bill => bill.groupId !== selectedGroupId);
+
+                saveUserData();
+                backToGroups();
+                refreshBillForm();
+                refreshBillsList();
+                refreshDebtForm();
+            }
+        }
+
+        // Bill management
+        function refreshBillForm() {
+            const billGroupSelect = document.getElementById('billGroup');
+            const billPayerSelect = document.getElementById('billPayer');
+
+            // Clear current options
+            billPayerSelect.innerHTML = '<option value="">Select payer</option>';
+
+            if (billGroupSelect.value) {
+                const group = userData.groups.find(g => g.id === billGroupSelect.value);
+                if (group) {
+                    group.members.forEach(member => {
+                        const option = document.createElement('option');
+                        option.value = member;
+                        option.textContent = member + (member === currentUser ? ' (You)' : '');
+                        billPayerSelect.appendChild(option);
+                    });
+                }
+            }
+
+            // Update currency symbols
+            const currency = document.getElementById('billCurrency').value;
+            const symbolSelect = document.getElementById('billCurrencySymbol');
+            const symbols = {
+                'USD': '$', 'EUR': '€', 'GBP': '£', 'JPY': '¥',
+                'CNY': '¥', 'KRW': '₩', 'THB': '฿', 'INR': '₹',
+                'AUD': '$', 'CAD': '$'
+            };
+            symbolSelect.value = symbols[currency] || '$';
+        }
+
+        function toggleSplitOptions() {
+            const splitType = document.getElementById('billSplitType').value;
+            const customSplitSection = document.getElementById('customSplitSection');
+            const customSplitInputs = document.getElementById('customSplitInputs');
+
+            if (splitType === 'custom') {
+                customSplitSection.style.display = 'block';
+
+                // Get selected group
+                const groupId = document.getElementById('billGroup').value;
+                if (!groupId) {
+                    alert('Please select a group first');
+                    document.getElementById('billSplitType').value = 'equal';
+                    customSplitSection.style.display = 'none';
+                    return;
+                }
+
+                const group = userData.groups.find(g => g.id === groupId);
+                if (!group) return;
+
+                // Create input for each member
+                let html = '';
+                group.members.forEach(member => {
+                    html += `
+                        <div class="split-inputs">
+                            <div>${member} ${member === currentUser ? '(You)' : ''}</div>
+                            <input type="number" id="split_${member}" placeholder="Amount" step="0.01" min="0" style="width: 150px;">
+                        </div>
+                    `;
+                });
+                customSplitInputs.innerHTML = html;
+            } else {
+                customSplitSection.style.display = 'none';
+            }
+        }
+
+        function addBill() {
+            const groupId = document.getElementById('billGroup').value;
+            const description = document.getElementById('billDescription').value.trim();
+            const currency = document.getElementById('billCurrency').value;
+            const amount = parseFloat(document.getElementById('billAmount').value);
+            const payer = document.getElementById('billPayer').value;
+            const splitType = document.getElementById('billSplitType').value;
+            const date = document.getElementById('billDate').value;
+            const time = document.getElementById('billTime').value;
+
+            // Validation
+            if (!groupId) {
+                alert('Please select a group');
+                return;
+            }
+            if (!description) {
+                alert('Please enter a description');
+                return;
+            }
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            if (!payer) {
+                alert('Please select a payer');
+                return;
+            }
+
+            const group = userData.groups.find(g => g.id === groupId);
+            if (!group) return;
+
+            // Calculate splits
+            let splits = {};
+            if (splitType === 'equal') {
+                const share = amount / group.members.length;
+                group.members.forEach(member => {
+                    splits[member] = share;
+                });
+            } else {
+                // Custom splits
+                let total = 0;
+                group.members.forEach(member => {
+                    const input = document.getElementById(`split_${member}`);
+                    const value = input ? parseFloat(input.value) || 0 : 0;
+                    splits[member] = value;
+                    total += value;
+                });
+
+                if (Math.abs(total - amount) > 0.01) {
+                    alert(`Custom splits total (${total}) doesn't match bill amount (${amount})`);
+                    return;
+                }
+            }
+
+            // Create bill
+            const newBill = {
+                id: Date.now().toString(),
+                groupId: groupId,
+                groupName: group.name,
+                description: description,
+                currency: currency,
+                amount: amount,
+                payer: payer,
+                splits: splits,
+                date: date,
+                time: time,
+                createdAt: new Date().toISOString()
+            };
+
+            userData.bills.push(newBill);
+            saveUserData();
+
+            // Clear form
+            document.getElementById('billDescription').value = '';
+            document.getElementById('billAmount').value = '';
+
+            refreshBillsList();
+        }
+
+        function refreshBillsList() {
+            const billsList = document.getElementById('billsList');
+
+            if (userData.bills.length === 0) {
+                billsList.innerHTML = '<div class="empty-state">No bills yet. Add your first bill!</div>';
+                return;
+            }
+
+            // Sort bills by date (newest first)
+            const sortedBills = [...userData.bills].sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time));
+
+            let html = '';
+            sortedBills.forEach(bill => {
+                // Find group
+                const group = userData.groups.find(g => g.id === bill.groupId);
+                if (!group) return;
+
+                // Format date
+                const dateObj = new Date(bill.date + 'T' + bill.time);
+                const dateStr = dateObj.toLocaleDateString();
+                const timeStr = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                html += `
+                    <div class="bill-item">
+                        <div style="flex: 1;">
+                            <strong>${bill.description}</strong>
+                            <div style="font-size: 14px; color: #555;">
+                                ${bill.currency} ${bill.amount.toFixed(2)} • Paid by ${bill.payer} ${bill.payer === currentUser ? '(You)' : ''}
+                            </div>
+                            <div style="font-size: 12px; color: #95a5a6;">
+                                ${group.name} • ${dateStr} at ${timeStr}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <button class="btn btn-small btn-danger" onclick="deleteBill('${bill.id}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            billsList.innerHTML = html;
+        }
+
+        function deleteBill(billId) {
+            if (confirm('Are you sure you want to delete this bill?')) {
+                userData.bills = userData.bills.filter(bill => bill.id !== billId);
+                saveUserData();
+                refreshBillsList();
+            }
+        }
+
+        // Debt simplification
+        function calculateDebts() {
+            const groupId = document.getElementById('debtGroup').value;
+            if (!groupId) {
+                document.getElementById('debtResults').innerHTML = '<div class="empty-state">Select a group to see simplified debts</div>';
+                return;
+            }
+
+            const group = userData.groups.find(g => g.id === groupId);
+            if (!group) return;
+
+            // Get all bills for this group
+            const groupBills = userData.bills.filter(bill => bill.groupId === groupId);
+            if (groupBills.length === 0) {
+                document.getElementById('debtResults').innerHTML = '<div class="empty-state">No bills in this group yet</div>';
+                return;
+            }
+
+            // Calculate net balances for each member
+            const balances = {};
+            group.members.forEach(member => {
+                balances[member] = 0;
+            });
+
+            // Process each bill
+            groupBills.forEach(bill => {
+                // Payer gets positive balance (others owe them)
+                balances[bill.payer] += bill.amount;
+
+                // Split amounts reduce balance for each member
+                Object.entries(bill.splits).forEach(([member, amount]) => {
+                    balances[member] -= amount;
+                });
+            });
+
+            // Separate debtors and creditors
+            const debtors = [];
+            const creditors = [];
+
+            Object.entries(balances).forEach(([person, balance]) => {
+                if (balance < -0.01) { // Owe money
+                    debtors.push({person, amount: -balance});
+                } else if (balance > 0.01) { // Are owed money
+                    creditors.push({person, amount: balance});
+                }
+            });
+
+            // Sort by amount (largest first)
+            debtors.sort((a, b) => b.amount - a.amount);
+            creditors.sort((a, b) => b.amount - a.amount);
+
+            // Simplify debts
+            const transactions = [];
+            let i = 0, j = 0;
+
+            while (i < debtors.length && j < creditors.length) {
+                const debtor = debtors[i];
+                const creditor = creditors[j];
+
+                const amount = Math.min(debtor.amount, creditor.amount);
+
+                if (amount > 0.01) { // Only include significant transactions
+                    transactions.push({
+                        from: debtor.person,
+                        to: creditor.person,
+                        amount: parseFloat(amount.toFixed(2))
+                    });
+
+                    debtor.amount -= amount;
+                    creditor.amount -= amount;
+                }
+
+                if (debtor.amount < 0.01) i++;
+                if (creditor.amount < 0.01) j++;
+            }
+
+            // Display results
+            const debtResults = document.getElementById('debtResults');
+
+            if (transactions.length === 0) {
+                debtResults.innerHTML = '<div class="empty-state">All debts are settled! No transactions needed.</div>';
+                return;
+            }
+
+            let html = '<div class="debt-result">';
+            html += '<h4>Simplified Transactions</h4>';
+            html += '<p>To settle all debts with minimum transactions:</p>';
+
+            transactions.forEach(tx => {
+                html += `
+                    <div class="debt-item">
+                        <strong>${tx.from}</strong> ${tx.from === currentUser ? '(You)' : ''}
+                        pays <strong>${tx.to}</strong> ${tx.to === currentUser ? '(You)' : ''}
+                        <span class="positive">${tx.amount.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+
+            // Show original balances
+            html += '<div style="margin-top: 20px;">';
+            html += '<h4>Original Balances</h4>';
+
+            Object.entries(balances).forEach(([person, balance]) => {
+                if (Math.abs(balance) > 0.01) {
+                    const className = balance > 0 ? 'positive' : 'negative';
+                    const sign = balance > 0 ? '+' : '';
+                    html += `
+                        <div style="margin: 5px 0;">
+                            ${person} ${person === currentUser ? '(You)' : ''}:
+                            <span class="${className}">${sign}${balance.toFixed(2)}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            html += '</div>';
+
+            debtResults.innerHTML = html;
+        }
+
+        function refreshDebtForm() {
+            // Already handled in refreshGroupsList
+        }
+
+        // Data synchronization functions
+        function exportData() {
+            const exportTextarea = document.getElementById('exportData');
+            const dataToExport = {
+                username: userData.username,
+                groups: userData.groups,
+                bills: userData.bills,
+                exportedAt: new Date().toISOString(),
+                version: '1.0'
+            };
+            exportTextarea.value = JSON.stringify(dataToExport, null, 2);
+            alert('Data exported successfully! Copy the JSON text and share it with your travel buddies.');
+        }
+
+        function copyExportData() {
+            const exportTextarea = document.getElementById('exportData');
+            if (!exportTextarea.value.trim()) {
+                alert('Please export data first by clicking "Export Data"');
+                return;
+            }
+            exportTextarea.select();
+            document.execCommand('copy');
+            alert('Data copied to clipboard! You can now paste it in a message.');
+        }
+
+        function importData() {
+            const importTextarea = document.getElementById('importData');
+            const importText = importTextarea.value.trim();
+
+            if (!importText) {
+                alert('Please paste JSON data to import');
+                return;
+            }
+
+            try {
+                const importedData = JSON.parse(importText);
+
+                // Basic validation
+                if (!importedData.username || !Array.isArray(importedData.groups) || !Array.isArray(importedData.bills)) {
+                    throw new Error('Invalid data format. Expected JSON with username, groups, and bills arrays.');
+                }
+
+                if (confirm(`Import groups and bills from ${importedData.username}? Your login name (${currentUser}) will remain unchanged.`)) {
+                    // Store current username before merge
+                    const currentUsername = currentUser;
+
+                    // Merge groups (avoid duplicates by ID)
+                    importedData.groups.forEach(importedGroup => {
+                        const existingGroupIndex = userData.groups.findIndex(g => g.id === importedGroup.id);
+                        if (existingGroupIndex === -1) {
+                            // Add new group
+                            userData.groups.push(importedGroup);
+                        } else {
+                            // Update existing group - merge members
+                            const existingGroup = userData.groups[existingGroupIndex];
+                            // Add any missing members from imported group
+                            importedGroup.members.forEach(member => {
+                                if (!existingGroup.members.includes(member)) {
+                                    existingGroup.members.push(member);
+                                }
+                            });
+                            // Keep other properties from imported group (name, etc.)
+                            userData.groups[existingGroupIndex] = {
+                                ...existingGroup,
+                                name: importedGroup.name,
+                                createdBy: importedGroup.createdBy,
+                                createdAt: importedGroup.createdAt
+                            };
+                        }
+                    });
+
+                    // Merge bills (avoid duplicates by ID)
+                    importedData.bills.forEach(importedBill => {
+                        const existingBillIndex = userData.bills.findIndex(b => b.id === importedBill.id);
+                        if (existingBillIndex === -1) {
+                            // Add new bill
+                            userData.bills.push(importedBill);
+                        } else {
+                            // Update existing bill
+                            userData.bills[existingBillIndex] = importedBill;
+                        }
+                    });
+
+                    // Keep current username (don't change login identity)
+                    userData.username = currentUsername;
+                    saveUserData();
+
+                    // Refresh everything
+                    refreshGroupsList();
+                    refreshBillForm();
+                    refreshBillsList();
+                    refreshDebtForm();
+
+                    // Clear import textarea
+                    importTextarea.value = '';
+
+                    // Check if current user appears in any imported group members
+                    let userFoundInGroups = false;
+                    importedData.groups.forEach(group => {
+                        if (group.members.includes(currentUser)) {
+                            userFoundInGroups = true;
+                        }
+                    });
+
+                    let message = `Data imported successfully! Added ${importedData.groups.length} group(s) and ${importedData.bills.length} bill(s) to your account. You are still logged in as ${currentUser}.`;
+
+                    if (importedData.groups.length > 0 && !userFoundInGroups) {
+                        message += `\n\n⚠️ Note: Your username "${currentUser}" was not found in any imported groups. Make sure you're using the same username as in the shared data.`;
+                    }
+
+                    alert(message);
+                }
+            } catch (error) {
+                alert(`Error importing data: ${error.message}\n\nMake sure you copied the entire JSON text correctly.`);
+            }
+        }
+
+        function clearImport() {
+            document.getElementById('importData').value = '';
+        }
+
+        function resetAllData() {
+            if (confirm('WARNING: This will delete ALL your data including groups, bills, and settings. This cannot be undone. Are you sure?')) {
+                if (confirm('Are you REALLY sure? This will completely reset WanderBill.')) {
+                    localStorage.removeItem('wanderbill_user');
+                    currentUser = '';
+                    userData = {
+                        username: '',
+                        groups: [],
+                        bills: []
+                    };
+
+                    // Show login page
+                    document.getElementById('loginPage').style.display = 'block';
+                    document.getElementById('app').style.display = 'none';
+                    document.getElementById('username').value = '';
+                    document.getElementById('username').focus();
+
+                    alert('All data has been reset. Refresh the page to start fresh.');
+                }
+            }
+        }
+
+
+        // Event listeners for dynamic updates
+        document.getElementById('billGroup').addEventListener('change', function() {
+            refreshBillForm();
+            toggleSplitOptions(); // In case split type is custom
+        });
+
+        document.getElementById('billCurrency').addEventListener('change', function() {
+            const currency = this.value;
+            const symbolSelect = document.getElementById('billCurrencySymbol');
+            const symbols = {
+                'USD': '$', 'EUR': '€', 'GBP': '£', 'JPY': '¥',
+                'CNY': '¥', 'KRW': '₩', 'THB': '฿', 'INR': '₹',
+                'AUD': '$', 'CAD': '$'
+            };
+            symbolSelect.value = symbols[currency] || '$';
+        });
+    </script>
+</body>
+</html>
