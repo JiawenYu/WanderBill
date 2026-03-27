@@ -20,7 +20,7 @@ WanderBill is a simple, browser-based expense tracking tool designed for travel 
 
 * 🚫 **Ad-Free Experience**: No interruptions, just tracking.
 * 💡 **User-Friendly**: A clean, intuitive interface designed for everyone.
-* 🆓 **100% Free**: No hidden fees or "premium" locks.
+* 🆓 **100% Free**: No hidden fees or 'premium' locks.
 * 🛡️ **Privacy-First**: Your data is stored locally in your browser, ensuring total privacy.
 
 ## ✨ Features
@@ -38,7 +38,7 @@ WanderBill is a simple, browser-based expense tracking tool designed for travel 
   - **Custom split**: Specify exact amount for each member.
   - Date and time tracking for every expense.
 * 🔄 **Debt Simplification**
-  - Automatically calculates "who owes whom."
+  - Automatically calculates 'who owes whom.'
   - Reduces complex debt networks to minimal transactions.
   - *Example: If A owes B $100, and B owes C $200 → A pays C $100, B pays C $100.*
 * 💱 **Currency Support**
@@ -73,7 +73,7 @@ WanderBill is a simple, browser-based expense tracking tool designed for travel 
 > **WanderBill stores all data LOCALLY in your browser's `localStorage`.**
 > * No data is ever sent to a server.
 > * Data persists between browser sessions.
-> * **To clear data:** Use your browser's "Clear Site Data" option or logout.
+> * **To clear data:** Use your browser's 'Clear Site Data' option or logout.
 
 ---
 
