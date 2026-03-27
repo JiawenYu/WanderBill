@@ -16,6 +16,13 @@
 ## 📖 Introduction
 WanderBill is a simple, browser-based expense tracking tool designed for travel groups. It helps you and your travel companions track shared expenses and simplifies complex debt settlements into minimal transactions.
 
+## 🌟 Why WanderBill?
+
+* 🚫 **Ad-Free Experience**: No interruptions, just tracking.
+* 💡 **User-Friendly**: A clean, intuitive interface designed for everyone.
+* 🆓 **100% Free**: No hidden fees or "premium" locks.
+* 🛡️ **Privacy-First**: Your data is stored locally in your browser, ensuring total privacy.
+
 ## ✨ Features
 
 * 👤 **User Management**
