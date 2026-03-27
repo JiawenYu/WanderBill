@@ -34,7 +34,7 @@ WanderBill is a simple, browser-based expense tracking tool designed for travel 
 ## How to Use
 
 ### First Time Setup
-1. Open `index.html` in your web browser
+1. Open `https://jiawenyu.github.io/WanderBill/` in your web browser
 2. Enter your username (any name you prefer)
 3. Click "Start Tracking"
 
