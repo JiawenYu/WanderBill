@@ -52,15 +52,15 @@ WanderBill is a simple, browser-based expense tracking tool designed for travel 
 ### 1️⃣ First Time Setup
 1. Open [WanderBill](https://jiawenyu.github.io/WanderBill/) in your web browser.
 2. Enter your **username** (any name you prefer).
-3. Click **"Start Tracking"**.
+3. Click **'Start Tracking'**.
 
 ### 2️⃣ Managing Groups
-- Go to the **Travel Groups** tab and click **"Create Group"**.
-- Click **"View"** on a group to add your travel companions' usernames.
+- Go to the **Travel Groups** tab and click **'Create Group'**.
+- Click **'View'** on a group to add your travel companions' usernames.
 
 ### 3️⃣ Adding Bills
 - Go to the **Bills** tab and select your group.
-- Fill in the details (Description, Amount, Split Type) and click **"Add Bill"**.
+- Fill in the details (Description, Amount, Split Type) and click **'Add Bill'**.
 
 ### 4️⃣ Settling Debts
 - Go to the **Debts** tab to see the simplified transactions needed to settle all accounts.
@@ -82,10 +82,10 @@ WanderBill is a simple, browser-based expense tracking tool designed for travel 
 Since WanderBill is local-first, follow these steps to sync data between devices:
 
 ### How to Sync
-1. **Designate a "Data Master"**: One person manages the master copy.
-2. **Export Data**: Go to the **Data Sync** tab, click **"Export Data"**, and copy the JSON text.
+1. **Designate a 'Data Master'**: One person manages the master copy.
+2. **Export Data**: Go to the **Data Sync** tab, click **'Export Data'**, and copy the JSON text.
 3. **Share**: Send the JSON via messaging apps (Messenger, WhatsApp, etc.).
-4. **Import**: Others go to the **Data Sync** tab, paste the JSON, and click **"Import Data"**.
+4. **Import**: Others go to the **Data Sync** tab, paste the JSON, and click **'Import Data'**.
 
 ### 💡 Best Practices
 * **Sync regularly**: At least once a day during the trip.
