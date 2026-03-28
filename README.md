@@ -1,3 +1,9 @@
+<div align="right">
+
+[![English](https://img.shields.io/badge/Language-English-blue?style=flat-square)](#)
+[![中文](https://img.shields.io/badge/語言-中文-lightgrey?style=flat-square)](./README_zh.md)
+
+</div>
 <div align="center">
 
 # ✈️ WanderBill - Travel Expense Tracker
