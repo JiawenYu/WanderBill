@@ -50,6 +50,28 @@ WanderBill is a simple, browser-based expense tracking tool designed for travel 
 
 ---
 
+## 🌍 Currency & Exchange Rates
+
+Currently, **WanderBill** is designed to process calculations using raw numerical values without automatic currency conversion. To ensure the highest accuracy and avoid financial discrepancies caused by fluctuating exchange rates, please follow these guidelines:
+
+### ⚠️ Important Notice
+* **Single Currency per Group**: The 'Debt Simplification' algorithm treats all numbers as the same currency. **Do not mix different currencies** (e.g., USD and JPY) within a single travel group, as this will result in incorrect debt calculations.
+
+### 💡 Best Practices for Multi-Currency Trips
+If your trip involves multiple currencies (for example, a trip to Europe and the UK), we recommend the following approach:
+
+1.  **Create Separate Groups**: Create one group for each currency.
+    * *Example:* 'Paris Trip - EUR' and 'London Trip - GBP'.
+2.  **Consistent Logging**: Only add bills to the group that matches the currency of the receipt.
+3.  **Avoid Rate Loss**: By settling debts in the original currency, you and your friends avoid the 'hidden costs' of bank conversion fees and daily rate changes.
+
+### 📝 Example Scenario
+> **Trip to Japan**
+> * **Group A (JPY):** Used for local ramen, trains, and hotels. Settled in JPY.
+> * **Group B (USD):** Used for international flights or prepayments made in Dollars. Settled in USD.
+
+---
+
 ## 🚀 How to Use
 
 ### 1️⃣ First Time Setup
