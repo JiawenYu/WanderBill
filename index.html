@@ -995,6 +995,7 @@
                 const dateStr = dateObj.toLocaleDateString();
                 const timeStr = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
+                // Locate this part inside the sortedBills.forEach loop in refreshBillsList()
                 html += `
                     <div class="bill-item">
                         <div style="flex: 1;">
@@ -1006,7 +1007,8 @@
                                 ${group.name} • ${dateStr} at ${timeStr}
                             </div>
                         </div>
-                        <div style="text-align: right;">
+                        <div style="text-align: right; display: flex; gap: 5px; align-items: center;">
+                            <button class="btn btn-small" onclick="viewBillDetails('${bill.id}')">View</button>
                             <button class="btn btn-small btn-danger" onclick="deleteBill('${bill.id}')">Delete</button>
                         </div>
                     </div>
@@ -1310,6 +1312,54 @@
             };
             symbolSelect.value = symbols[currency] || '$';
         });
+
+        
+        // Function to show bill details
+        function viewBillDetails(billId) {
+            const bill = userData.bills.find(b => b.id === billId);
+            if (!bill) return;
+        
+            const content = document.getElementById('billDetailsContent');
+            let splitsHtml = '<ul style="list-style: none; padding-left: 0;">';
+            
+            // Generate the list of who owes what for this specific bill
+            for (const [member, amount] of Object.entries(bill.splits)) {
+                splitsHtml += `
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
+                        <span>${member} ${member === currentUser ? '(You)' : ''}</span>
+                        <span class="negative">${bill.currency} ${amount.toFixed(2)}</span>
+                    </li>`;
+            }
+            splitsHtml += '</ul>';
+        
+            content.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <p><strong>Description:</strong> ${bill.description}</p>
+                    <p><strong>Total Amount:</strong> ${bill.currency} ${bill.amount.toFixed(2)}</p>
+                    <p><strong>Paid By:</strong> ${bill.payer}</p>
+                    <p><strong>Date:</strong> ${bill.date} ${bill.time}</p>
+                </div>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                <h4>Split Breakdown</h4>
+                ${splitsHtml}
+            `;
+        
+            document.getElementById('billModal').style.display = 'block';
+        }
+
+        // Function to close the modal
+        function closeBillModal() {
+            document.getElementById('billModal').style.display = 'none';
+        }
     </script>
+<div id="billModal" style="display:none; position:fixed; z-index:100; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
+    <div class="page" style="max-width:500px; margin:100px auto; position:relative;">
+        <h2 class="page-title">Bill Details</h2>
+        <div id="billDetailsContent"></div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button class="btn btn-secondary" onclick="closeBillModal()">Close</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
