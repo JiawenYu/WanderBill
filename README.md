@@ -64,6 +64,7 @@ WanderBill is a simple, browser-based expense tracking tool designed for travel 
 
 ### 4️⃣ Settling Debts
 - Go to the **Debts** tab to see the simplified transactions needed to settle all accounts.
+- ❗ **Pro Tip**: If you have recently updated your bills but the 'Simplified Transactions' look unchanged, please **refresh the page**. This ensures the calculation is fully updated and prevents any settlement errors due to browser display lag.
 
 ---
 
